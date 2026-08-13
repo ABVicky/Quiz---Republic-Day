@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>🇮🇳 Digital Marketing Freedom Quiz | Ultimate Live Game Show</title>
+    <meta name="description" content="An electrifying Kahoot-style live digital marketing quiz game show with crazy visual effects, soundboard, speed spotlight, and WebRTC sync!">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Orbitron:wght@600;800;900&display=swap" rel="stylesheet">
+    <!-- PeerJS & QRCode CDNs -->
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Interactive Canvases & Floating Emoji Stream Container -->
+    <canvas id="particle-canvas" class="particle-canvas"></canvas>
+    <canvas id="confetti-canvas" class="confetti-canvas"></canvas>
+    <div id="floating-emojis-container" class="floating-emojis-container"></div>
+
+    <div class="bg-glow-container">
+        <div class="bg-glow saffron-glow"></div>
+        <div class="bg-glow white-glow"></div>
+        <div class="bg-glow green-glow"></div>
+        <div class="ashoka-chakra-bg"></div>
+    </div>
+
+    <div id="app" class="app-container">
+
+        <!-- ================= MODE SELECTOR LANDING SCREEN ================= -->
+        <section id="screen-mode-select" class="screen active">
+            <div class="hero-content">
+                <div class="hero-flag-header">
+                    <div class="tricolour-stripe saffron"></div>
+                    <div class="tricolour-stripe white"><div class="chakra-mini"></div></div>
+                    <div class="tricolour-stripe green"></div>
+                </div>
+
+                <div class="live-event-tag pulse-glow">🔥 LIVE FREEDOM COMPETITION</div>
+                
+                <h1 class="hero-title">
+                    🇮🇳 DIGITAL MARKETING<br>
+                    <span class="text-gradient-tricolour neon-text">FREEDOM QUIZ</span>
+                </h1>
+                <p class="hero-tagline">"Are You Ready to Dominate the Digital Marketing Arena?"</p>
+
+                <div class="mode-select-cards">
+                    <div class="mode-card host-mode-card" id="btn-select-host">
+                        <div class="card-neon-border"></div>
+                        <div class="mode-icon">📺</div>
+                        <h3>HOST GAME SHOW</h3>
+                        <p>For Smartboards, Projectors & Laptops. Shows live question stage, timer, QR Code & scoreboards.</p>
+                        <button class="btn-primary btn-crazy">CREATE ROOM 🚀</button>
+                    </div>
+
+                    <div class="mode-card student-mode-card" id="btn-select-student">
+                        <div class="card-neon-border"></div>
+                        <div class="mode-icon">📱</div>
+                        <h3>JOIN AS PLAYER</h3>
+                        <p>For Mobile Phones & Tablets. Enter Room PIN to trigger crazy speed answers in real-time!</p>
+                        <button class="btn-secondary btn-crazy">JOIN GAME ➔</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================================================================
+             A. HOST VIEW STAGE (SMARTBOARD / PROJECTOR)
+             ================================================================== -->
+        <div id="host-view" class="view-wrapper hidden">
+            
+            <!-- TOP HUD HEADER -->
+            <header id="host-top-hud" class="top-hud">
+                <div class="hud-left">
+                    <button id="btn-host-home" class="hud-btn home-nav-btn" title="Back to Home Menu">
+                        <span class="icon">🏠</span> HOME
+                    </button>
+                    <div class="brand-badge">
+                        <span class="flag-icon">🇮🇳</span>
+                        <span class="brand-text">FREEDOM <strong>QUIZ LIVE</strong></span>
+                    </div>
+                    <div id="hud-round-badge" class="round-badge">
+                        <span id="hud-round-number">ROUND 1</span>
+                        <span id="hud-round-name">CONTENT CREATION</span>
+                    </div>
+                </div>
+
+                <div class="hud-center">
+                    <div class="q-progress-container">
+                        <div class="q-counter">
+                            QUESTION <span id="current-q-num">01</span> / <span id="total-q-num">36</span>
+                        </div>
+                        <div class="progress-bar-track">
+                            <div id="progress-bar-fill" class="progress-bar-fill" style="width: 2.78%;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="hud-right">
+                    <div class="pin-badge">
+                        <span class="pin-label">ROOM PIN</span>
+                        <span id="hud-room-pin" class="pin-val">----</span>
+                    </div>
+                    <div class="hud-actions">
+                        <button id="btn-soundboard-toggle" class="hud-btn highlight" title="Host Soundboard Panel">
+                            <span class="icon">🎵</span> FX SOUNDS
+                        </button>
+                        <button id="btn-sound-toggle" class="hud-btn" title="Toggle Sound (M)">
+                            <span class="icon" id="sound-icon">🔊</span>
+                        </button>
+                        <button id="btn-leaderboard" class="hud-btn highlight" title="Leaderboard (L)">
+                            <span class="icon">🏆</span> SCORES
+                        </button>
+                        <button id="btn-fullscreen" class="hud-btn" title="Toggle Fullscreen (F)">
+                            <span class="icon">⛶</span>
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <!-- 1. HOST LOBBY SCREEN -->
+            <section id="host-lobby-screen" class="host-screen active">
+                <div class="lobby-grid">
+                    <div class="lobby-join-info glass-panel cyber-border">
+                        <h2>JOIN THE ARENA! 🇮🇳</h2>
+                        <p class="join-sub">Scan QR Code or enter Room PIN on your smartphone:</p>
+                        <div id="qrcode-container" class="qrcode-wrapper"></div>
+                        <div class="pin-display-box pulse-border">
+                            <span class="pin-lbl">ROOM PIN:</span>
+                            <span id="lobby-room-pin" class="pin-code">8921</span>
+                        </div>
+                        <p class="url-hint" id="lobby-join-url">https://your-github-username.github.io/quiz/</p>
+                    </div>
+
+                    <div class="lobby-players-info glass-panel cyber-border">
+                        <div class="players-header">
+                            <h3>PLAYERS IN LOBBY (<span id="player-count">0</span>)</h3>
+                            <div class="live-pulse-dot"></div>
+                        </div>
+                        <div id="players-grid" class="players-grid-container">
+                            <div class="empty-lobby-text">Waiting for warriors to join... 📱</div>
+                        </div>
+                        <div class="lobby-actions-row">
+                            <button id="btn-host-lobby-home" class="btn-secondary">🏠 Home</button>
+                            <button id="btn-host-start-game" class="btn-primary btn-giant flex-1 btn-crazy">
+                                START GAME SHOW 🚀
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 2. HOST QUESTION SCREEN -->
+            <section id="host-question-screen" class="host-screen hidden">
+                <div class="stage-grid">
+                    <div class="question-main-wrapper">
+                        <div class="question-card glass-panel cyber-border">
+                            <div class="q-meta">
+                                <span id="q-category-tag" class="q-category-tag">CONTENT CREATION</span>
+                                <span id="q-number-pill" class="q-number-pill">Q1</span>
+                            </div>
+                            <h2 id="host-question-text" class="question-text">
+                                Question loading...
+                            </h2>
+                        </div>
+
+                        <!-- 4 Options Grid -->
+                        <div id="host-options-grid" class="options-grid">
+                            <div class="option-card opt-red 3d-card" data-index="0">
+                                <div class="option-badge">▲</div>
+                                <div class="option-text">Option A</div>
+                            </div>
+                            <div class="option-card opt-blue 3d-card" data-index="1">
+                                <div class="option-badge">◆</div>
+                                <div class="option-text">Option B</div>
+                            </div>
+                            <div class="option-card opt-saffron 3d-card" data-index="2">
+                                <div class="option-badge">●</div>
+                                <div class="option-text">Option C</div>
+                            </div>
+                            <div class="option-card opt-green 3d-card" data-index="3">
+                                <div class="option-badge">■</div>
+                                <div class="option-text">Option D</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Timer & Live Response Panel -->
+                    <aside class="timer-side-panel glass-panel cyber-border">
+                        <div class="timer-widget">
+                            <div class="timer-ring-container">
+                                <svg class="timer-ring" viewBox="0 0 160 160">
+                                    <circle class="timer-ring-bg" cx="80" cy="80" r="70"></circle>
+                                    <circle id="timer-ring-fill" class="timer-ring-fill" cx="80" cy="80" r="70"></circle>
+                                </svg>
+                                <div class="timer-digital">
+                                    <span id="timer-seconds">20</span>
+                                    <span class="timer-unit">SEC</span>
+                                </div>
+                            </div>
+                            <div id="timer-status-text" class="timer-status">THINKING TIME</div>
+                        </div>
+
+                        <div class="answers-submitted-counter glow-box">
+                            <span class="sub-num" id="submitted-count">0</span>
+                            <span class="sub-lbl">ANSWERS RECEIVED</span>
+                        </div>
+
+                        <div class="stage-nav-buttons">
+                            <button id="btn-host-prev-q" class="btn-nav">◀ PREV</button>
+                            <button id="btn-host-skip-timer" class="btn-secondary highlight">⏩ Reveal Results</button>
+                            <button id="btn-host-next-q-stage" class="btn-nav primary">NEXT ▶</button>
+                        </div>
+                    </aside>
+                </div>
+            </section>
+
+            <!-- 3. HOST RESULTS & BAR CHART SCREEN -->
+            <section id="host-results-screen" class="host-screen hidden">
+                <div class="results-card glass-panel cyber-border">
+                    <h2>LIVE RESPONSE ANALYTICS</h2>
+                    <h3 id="results-q-title">Question 1 Distribution</h3>
+
+                    <div class="bar-chart-container">
+                        <div class="chart-bar-wrapper">
+                            <div class="bar-count" id="count-opt-0">0</div>
+                            <div class="chart-bar bar-red" id="bar-opt-0" style="height: 0%;"></div>
+                            <div class="bar-label">▲ A</div>
+                        </div>
+                        <div class="chart-bar-wrapper">
+                            <div class="bar-count" id="count-opt-1">0</div>
+                            <div class="chart-bar bar-blue" id="bar-opt-1" style="height: 0%;"></div>
+                            <div class="bar-label">◆ B</div>
+                        </div>
+                        <div class="chart-bar-wrapper">
+                            <div class="bar-count" id="count-opt-2">0</div>
+                            <div class="chart-bar bar-saffron" id="bar-opt-2" style="height: 0%;"></div>
+                            <div class="bar-label">● C</div>
+                        </div>
+                        <div class="chart-bar-wrapper">
+                            <div class="bar-count" id="count-opt-3">0</div>
+                            <div class="chart-bar bar-green" id="bar-opt-3" style="height: 0%;"></div>
+                            <div class="bar-label">■ D</div>
+                        </div>
+                    </div>
+
+                    <!-- Fastest Warrior Spotlight -->
+                    <div id="fastest-warrior-card" class="fastest-warrior-card glow-fastest hidden">
+                        <span class="lightning-icon">⚡</span>
+                        <div class="fastest-info">
+                            <span class="fastest-lbl">FASTEST CORRECT ANSWER</span>
+                            <strong id="fastest-warrior-name">Alex — 1.2s</strong>
+                        </div>
+                    </div>
+
+                    <div class="correct-answer-banner glow-green">
+                        <span>OFFICIAL CORRECT ANSWER:</span>
+                        <strong id="correct-answer-text">Option A — Short-form video</strong>
+                    </div>
+
+                    <div class="results-actions">
+                        <button id="btn-host-prev-q-res" class="btn-secondary">◀ PREVIOUS</button>
+                        <button id="btn-host-next-q" class="btn-primary btn-large btn-crazy">NEXT QUESTION ▶</button>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+
+        <!-- ==================================================================
+             B. STUDENT MOBILE VIEW STAGE (SMARTPHONE CONTROLLER)
+             ================================================================== -->
+        <div id="student-view" class="view-wrapper hidden">
+            
+            <!-- STUDENT TOP HEADER NAV -->
+            <header id="student-top-nav" class="student-top-nav">
+                <button id="btn-student-leave" class="student-nav-btn" title="Leave Game">
+                    🚪 Exit
+                </button>
+                <div class="student-hud-title">🇮🇳 FREEDOM QUIZ</div>
+                <div id="student-pin-badge" class="student-pin-badge">PIN: ----</div>
+            </header>
+
+            <!-- 1. STUDENT JOIN FORM -->
+            <section id="student-join-screen" class="student-screen active">
+                <div class="student-join-card glass-panel cyber-border">
+                    <div class="student-brand">
+                        <span class="flag-icon">🇮🇳</span>
+                        <h2>ENTER THE ARENA</h2>
+                        <p>Claim your digital marketing title!</p>
+                    </div>
+
+                    <form id="form-student-join" class="student-form">
+                        <div class="form-group">
+                            <label for="student-name">Player / Team Nickname</label>
+                            <input type="text" id="student-name" placeholder="e.g. Maverick / Team Alpha" maxlength="20" required autofocus />
+                        </div>
+                        <div class="form-group">
+                            <label for="student-pin">Room PIN</label>
+                            <input type="number" id="student-pin" placeholder="4-digit PIN" required pattern="[0-9]*" />
+                        </div>
+                        <button type="submit" id="btn-student-join-submit" class="btn-primary full-width btn-crazy">
+                            JOIN ARENA 🚀
+                        </button>
+                    </form>
+                    <div id="join-status-msg" class="status-msg"></div>
+                </div>
+            </section>
+
+            <!-- 2. STUDENT WAITING LOBBY -->
+            <section id="student-waiting-screen" class="student-screen hidden">
+                <div class="student-waiting-card glass-panel cyber-border">
+                    <div class="spinner-pulse">📱</div>
+                    <h2>YOU'RE LOCKED IN!</h2>
+                    <h3 id="student-display-name">Player Name</h3>
+                    <p>Look at the smartboard! Game starting soon...</p>
+                    
+                    <!-- Live Reaction Emoji Toolbar -->
+                    <div class="student-emoji-toolbar">
+                        <span>Send Reaction:</span>
+                        <div class="emoji-btns-row">
+                            <button class="btn-emoji-reaction" data-emoji="🔥">🔥</button>
+                            <button class="btn-emoji-reaction" data-emoji="👏">👏</button>
+                            <button class="btn-emoji-reaction" data-emoji="❤️">❤️</button>
+                            <button class="btn-emoji-reaction" data-emoji="🚀">🚀</button>
+                            <button class="btn-emoji-reaction" data-emoji="🇮🇳">🇮🇳</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 3. STUDENT CONTROLLER (ANSWER PAD) -->
+            <section id="student-pad-screen" class="student-screen hidden">
+                <div class="pad-header">
+                    <span id="student-pad-qnum">QUESTION 1</span>
+                    <span id="student-streak-badge" class="streak-badge hidden">🔥 2 STREAK</span>
+                    <span id="student-pad-score">Score: 0</span>
+                </div>
+
+                <div class="touch-pad-grid">
+                    <button class="pad-btn pad-red 3d-touch" data-index="0">
+                        <span class="pad-symbol">▲</span>
+                        <span class="pad-letter">A</span>
+                    </button>
+                    <button class="pad-btn pad-blue 3d-touch" data-index="1">
+                        <span class="pad-symbol">◆</span>
+                        <span class="pad-letter">B</span>
+                    </button>
+                    <button class="pad-btn pad-saffron 3d-touch" data-index="2">
+                        <span class="pad-symbol">●</span>
+                        <span class="pad-letter">C</span>
+                    </button>
+                    <button class="pad-btn pad-green 3d-touch" data-index="3">
+                        <span class="pad-symbol">■</span>
+                        <span class="pad-letter">D</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- 4. STUDENT ANSWER SUBMITTED FEEDBACK -->
+            <section id="student-submitted-screen" class="student-screen hidden">
+                <div class="feedback-card glass-panel cyber-border">
+                    <div class="submitted-icon bounce-icon">⚡</div>
+                    <h2>BOOM! SUBMITTED!</h2>
+                    <p id="student-chosen-option">Option A Selected</p>
+                    <div class="waiting-badge pulse-glow">Calculating speed bonus...</div>
+                </div>
+            </section>
+
+            <!-- 5. STUDENT RESULT FEEDBACK -->
+            <section id="student-result-screen" class="student-screen hidden">
+                <div id="student-result-card" class="result-feedback-card glass-panel cyber-border">
+                    <div id="student-result-icon" class="result-icon">✓</div>
+                    <h2 id="student-result-title">CORRECT!</h2>
+                    <div id="student-points-gained" class="points-badge">+950 PTS</div>
+                    <p id="student-current-rank">Current Rank: #1</p>
+                </div>
+            </section>
+
+        </div>
+
+        <!-- ================= HOST SOUNDBOARD DRAWER ================= -->
+        <div id="host-soundboard-drawer" class="modal-overlay hidden">
+            <div class="modal-card soundboard-card glass-panel cyber-border">
+                <div class="modal-header">
+                    <h2>🎵 HOST LIVE SOUNDBOARD</h2>
+                    <button class="close-modal" id="close-soundboard">&times;</button>
+                </div>
+                <div class="modal-body soundboard-grid">
+                    <button class="btn-fx-sound" data-fx="drumroll">🥁 Drum Roll</button>
+                    <button class="btn-fx-sound" data-fx="applause">👏 Applause / Cheers</button>
+                    <button class="btn-fx-sound" data-fx="fanfare">🎺 Victory Fanfare</button>
+                    <button class="btn-fx-sound" data-fx="alarm">⚡ Speed Alarm</button>
+                    <button class="btn-fx-sound" data-fx="bell">🔔 Bell Ring</button>
+                    <button class="btn-fx-sound" data-fx="confetti">🎉 Confetti Cannon</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= ROUND TRANSITION OVERLAY ================= -->
+        <div id="round-intro-overlay" class="screen-overlay hidden">
+            <div class="round-intro-card cyber-border">
+                <div id="round-intro-badge" class="round-number-badge pulse-border">ROUND 1</div>
+                <h1 id="round-intro-title" class="round-intro-title text-gradient-tricolour">CONTENT CREATION</h1>
+                <p id="round-intro-tagline" class="round-intro-tagline">"Hook the Audience. Deliver Value."</p>
+                <div class="round-intro-divider"></div>
+                <p class="round-intro-qrange">Questions <span id="round-q-start">1</span> to <span id="round-q-end">8</span></p>
+                <button id="btn-start-round-now" class="btn-primary btn-large btn-crazy">BEGIN ROUND ➔</button>
+            </div>
+        </div>
+
+        <!-- ================= LEADERBOARD MODAL ================= -->
+        <div id="modal-leaderboard" class="modal-overlay hidden">
+            <div class="modal-card leaderboard-card glass-panel cyber-border">
+                <div class="modal-header">
+                    <h2>🏆 LIVE LEADERBOARD ARENA</h2>
+                    <button class="close-modal" id="close-leaderboard">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div id="leaderboard-list" class="leaderboard-table"></div>
+                </div>
+                <div class="modal-footer">
+                    <button id="btn-close-leaderboard" class="btn-primary btn-crazy">Back To Arena</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= FINAL CELEBRATION SCREEN ================= -->
+        <section id="final-screen" class="screen hidden">
+            <div class="final-card glass-panel cyber-border">
+                <div class="final-header">
+                    <div class="crown-icon spin-crown">👑</div>
+                    <h1 class="text-gradient-tricolour">VICTORY ARENA!</h1>
+                    <h2>DIGITAL MARKETING CHAMPIONS</h2>
+                </div>
+                <div id="podium-container" class="podium-container"></div>
+                <div class="final-message">
+                    <p class="slogan">"Freedom to Learn. Freedom to Create. Freedom to Grow. 🇮🇳"</p>
+                </div>
+                <div class="final-actions">
+                    <button id="btn-export-csv" class="btn-secondary">📥 EXPORT CSV SCORECARD</button>
+                    <button id="btn-home-final" class="btn-secondary">🏠 HOME MENU</button>
+                    <button id="btn-restart-game" class="btn-primary btn-large btn-crazy">🔄 REPLAY ARENA</button>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- Scripts -->
+    <script src="script.js"></script>
+</body>
+</html>
