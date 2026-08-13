@@ -95,28 +95,88 @@ class QuizSoundEngine {
     // 🇮🇳 PATRIOTIC MELODY SYNTHESIZER: "SARE JAHAN SE ACHHA, HINDUSTAN HAMARA"
     playSareJahanSeAchha() {
         if (this.muted) return;
-        const notes = [
-            // Sa-re Ja-han Se Ach-ha (C4 D4 E4 F4 G4 G4 A4 G4)
-            { f: 261.63, d: 0.35 }, { f: 293.66, d: 0.35 }, { f: 329.63, d: 0.35 }, { f: 349.23, d: 0.35 },
-            { f: 392.00, d: 0.50 }, { f: 392.00, d: 0.35 }, { f: 440.00, d: 0.35 }, { f: 392.00, d: 0.50 },
-            // Hin-dus-tan Ha-ma-ra (F4 E4 D4 E4 F4 E4 D4 C4)
-            { f: 349.23, d: 0.35 }, { f: 329.63, d: 0.35 }, { f: 293.66, d: 0.35 }, { f: 329.63, d: 0.35 },
-            { f: 349.23, d: 0.40 }, { f: 329.63, d: 0.40 }, { f: 293.66, d: 0.40 }, { f: 261.63, d: 0.75 },
-            // Hum Bul-bu-le Hain Is-ki (G4 C5 B4 A4 G4 F4 E4 F4 G4)
-            { f: 392.00, d: 0.35 }, { f: 523.25, d: 0.42 }, { f: 493.88, d: 0.35 }, { f: 440.00, d: 0.35 },
-            { f: 392.00, d: 0.50 }, { f: 349.23, d: 0.35 }, { f: 329.63, d: 0.35 }, { f: 349.23, d: 0.35 }, { f: 392.00, d: 0.50 },
-            // Ye Gul-si-tan Ha-ma-ra (F4 E4 D4 E4 F4 E4 D4 C4)
-            { f: 349.23, d: 0.35 }, { f: 329.63, d: 0.35 }, { f: 293.66, d: 0.35 }, { f: 329.63, d: 0.35 },
-            { f: 349.23, d: 0.45 }, { f: 329.63, d: 0.45 }, { f: 293.66, d: 0.45 }, { f: 261.63, d: 0.95 }
-        ];
+        try {
+            this.init();
+            if (this.ctx.state === 'suspended') this.ctx.resume();
 
-        let accumTime = 0;
-        notes.forEach((note) => {
-            setTimeout(() => {
-                this.playTone(note.f, 'triangle', note.d, 0.16);
-            }, accumTime * 1000);
-            accumTime += note.d + 0.05;
-        });
+            // 🇮🇳 Authentic Swara Frequencies (Key of C Major)
+            const C4 = 261.63; // Sa
+            const D4 = 293.66; // Re
+            const E4 = 329.63; // Ga
+            const F4 = 349.23; // Ma
+            const G4 = 392.00; // Pa
+            const A4 = 440.00; // Dha
+            const B4 = 493.88; // Ni
+            const C5 = 523.25; // Sa'
+
+            // Iconic Melody Notes & Duration (seconds)
+            const melody = [
+                // 1. "Sā-re Ja-hāñ Se Acchā"
+                { f: C4, d: 0.32 }, { f: D4, d: 0.32 }, { f: E4, d: 0.32 }, { f: F4, d: 0.32 },
+                { f: G4, d: 0.50 }, { f: G4, d: 0.28 }, { f: A4, d: 0.35 }, { f: G4, d: 0.45 },
+
+                // 2. "Hin-dus-tāñ Ha-mā-rā"
+                { f: F4, d: 0.32 }, { f: E4, d: 0.32 }, { f: D4, d: 0.32 }, { f: E4, d: 0.32 },
+                { f: F4, d: 0.40 }, { f: E4, d: 0.40 }, { f: D4, d: 0.40 }, { f: C4, d: 0.70 },
+
+                // Breath pause
+                { f: 0, d: 0.20 },
+
+                // 3. "Hum Bul-bu-le Haiñ Is-kī"
+                { f: G4, d: 0.32 }, { f: C5, d: 0.45 }, { f: C5, d: 0.32 }, { f: B4, d: 0.32 },
+                { f: A4, d: 0.35 }, { f: G4, d: 0.45 }, { f: G4, d: 0.32 }, { f: A4, d: 0.32 }, { f: G4, d: 0.45 },
+
+                // 4. "Ye Gul-si-tāñ Ha-mā-rā"
+                { f: F4, d: 0.32 }, { f: E4, d: 0.32 }, { f: D4, d: 0.32 }, { f: E4, d: 0.32 },
+                { f: F4, d: 0.40 }, { f: E4, d: 0.40 }, { f: D4, d: 0.40 }, { f: C4, d: 0.85 },
+
+                // Breath pause
+                { f: 0, d: 0.15 },
+
+                // 5. "Sāre Jahāñ Se Acchā... HINDUSTAN HAMARA!" (Grand Patriotic Finale)
+                { f: C4, d: 0.28 }, { f: D4, d: 0.28 }, { f: E4, d: 0.28 }, { f: F4, d: 0.28 },
+                { f: G4, d: 0.45 }, { f: A4, d: 0.45 }, { f: C5, d: 0.90 }
+            ];
+
+            let currentTime = this.ctx.currentTime + 0.05;
+
+            melody.forEach(note => {
+                if (note.f > 0) {
+                    // Primary Lead Synth (Warm Flute/Bansuri Tone)
+                    const oscLead = this.ctx.createOscillator();
+                    const gainLead = this.ctx.createGain();
+                    oscLead.type = 'triangle';
+                    oscLead.frequency.setValueAtTime(note.f, currentTime);
+
+                    gainLead.gain.setValueAtTime(0.001, currentTime);
+                    gainLead.gain.linearRampToValueAtTime(0.18, currentTime + 0.04);
+                    gainLead.gain.exponentialRampToValueAtTime(0.001, currentTime + note.d);
+
+                    oscLead.connect(gainLead);
+                    gainLead.connect(this.ctx.destination);
+
+                    oscLead.start(currentTime);
+                    oscLead.stop(currentTime + note.d);
+
+                    // Harmonium Warmth Sub-Oscillator (Octave lower)
+                    const oscSub = this.ctx.createOscillator();
+                    const gainSub = this.ctx.createGain();
+                    oscSub.type = 'sine';
+                    oscSub.frequency.setValueAtTime(note.f / 2, currentTime);
+
+                    gainSub.gain.setValueAtTime(0.001, currentTime);
+                    gainSub.gain.linearRampToValueAtTime(0.08, currentTime + 0.04);
+                    gainSub.gain.exponentialRampToValueAtTime(0.001, currentTime + note.d);
+
+                    oscSub.connect(gainSub);
+                    gainSub.connect(this.ctx.destination);
+
+                    oscSub.start(currentTime);
+                    oscSub.stop(currentTime + note.d);
+                }
+                currentTime += note.d + 0.03;
+            });
+        } catch (e) {}
     }
 
     // FX SOUNDBOARD
