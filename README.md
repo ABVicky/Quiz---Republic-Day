@@ -1,10 +1,17 @@
 # 🇮🇳 Digital Marketing Freedom Quiz — Live Multiplayer Game Show
 
 [![Live Demo](https://img.shields.io/badge/Live-GitHub%20Pages-FF9933?style=for-the-badge&logo=github)](https://abvicky.github.io/Quiz---Republic-Day/)
+[![Author: Vicky Prasad Mahato](https://img.shields.io/badge/Author-Vicky%20Prasad%20Mahato-00F0FF?style=for-the-badge)](https://github.com/ABVicky)
 [![License: MIT](https://img.shields.io/badge/License-MIT-10B981?style=for-the-badge)](LICENSE)
 [![Stack: HTML5/CSS3/JS](https://img.shields.io/badge/Stack-HTML5%20%7C%20CSS3%20%7C%20JS-138808?style=for-the-badge)](index.html)
 
 An electrifying, **Kahoot-style live multiplayer web application** designed for Indian Independence Day digital marketing competitions. Designed for classroom **Smartboards/Projectors** while students participate in real-time using their **Mobile Smartphones** via a zero-backend **WebRTC (PeerJS)** architecture.
+
+---
+
+## 👨‍💻 Credits & Attribution
+
+> **Designed, Developed & Ideated by [Vicky Prasad Mahato](https://github.com/ABVicky)**
 
 ---
 
@@ -85,7 +92,7 @@ cd Quiz---Republic-Day
 
 # 2. Make your edits and push changes
 git add .
-git commit -m "Update quiz features"
+git commit -m "Update watermark and credits"
 git push origin main
 ```
 
