@@ -842,9 +842,54 @@ function initApp() {
     if (joinPin) {
         initStudentMode(joinPin);
     } else {
-        document.getElementById('btn-select-host').addEventListener('click', initHostMode);
-        document.getElementById('btn-select-student').addEventListener('click', () => initStudentMode());
+        document.getElementById('btn-select-host').addEventListener('click', () => {
+            audio.init();
+            initHostMode();
+        });
+        document.getElementById('btn-select-student').addEventListener('click', () => {
+            audio.init();
+            initStudentMode();
+        });
     }
+
+    // Host Keyboard Control Shortcuts
+    window.addEventListener('keydown', (e) => {
+        // Prevent key triggers if user is typing inside text input fields
+        if (document.activeElement && (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA')) {
+            return;
+        }
+
+        if (mode === 'host') {
+            if (e.code === 'Space') {
+                e.preventDefault();
+                const questionScreen = document.getElementById('host-question-screen');
+                const resultsScreen = document.getElementById('host-results-screen');
+                if (!questionScreen.classList.contains('hidden')) {
+                    revealHostQuestionResults();
+                } else if (!resultsScreen.classList.contains('hidden')) {
+                    loadHostQuestion(gameState.currentQIndex + 1);
+                }
+            } else if (e.code === 'ArrowRight' || e.code === 'KeyN') {
+                e.preventDefault();
+                loadHostQuestion(gameState.currentQIndex + 1);
+            } else if (e.code === 'ArrowLeft' || e.code === 'KeyP') {
+                e.preventDefault();
+                if (gameState.currentQIndex > 0) loadHostQuestion(gameState.currentQIndex - 1);
+            } else if (e.code === 'KeyL') {
+                e.preventDefault();
+                renderLeaderboardModal();
+                document.getElementById('modal-leaderboard').classList.toggle('hidden');
+            } else if (e.code === 'KeyF') {
+                e.preventDefault();
+                if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+                else document.exitFullscreen();
+            } else if (e.code === 'KeyM') {
+                e.preventDefault();
+                audio.muted = !audio.muted;
+                document.getElementById('sound-icon').textContent = audio.muted ? "🔇" : "🔊";
+            }
+        }
+    });
 
     // Host Soundboard Drawer Listeners
     document.getElementById('btn-soundboard-toggle').addEventListener('click', () => {
