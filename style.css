@@ -463,6 +463,18 @@ html, body {
 .result-icon { font-size: 4.2rem; margin-bottom: 0.4rem; }
 .points-badge { font-family: var(--font-heading); font-size: clamp(2.1rem, 7vw, 2.7rem); font-weight: 900; color: var(--gold); margin: 0.9rem 0; }
 
+/* STUDENT FINAL VICTORY CERTIFICATE */
+.student-final-card { max-width: 420px; width: 92%; padding: 2.5rem 1.8rem; text-align: center; margin: auto; display: flex; flex-direction: column; align-items: center; gap: 1rem; }
+.final-badge-icon { font-size: 5rem; animation: bounce 1.5s infinite; }
+#student-final-title { font-family: var(--font-heading); font-size: clamp(1.5rem, 5vw, 2rem); color: var(--saffron); }
+.final-rank-highlight { font-family: var(--font-heading); font-size: clamp(1.6rem, 5vw, 2.2rem); font-weight: 900; color: white; background: rgba(255, 215, 0, 0.15); border: 2px solid var(--gold); padding: 0.6rem 1.6rem; border-radius: 30px; }
+.final-score-highlight { font-size: 1.3rem; font-weight: 800; color: #34D399; }
+.final-quote { font-size: 0.88rem; color: #94A3B8; font-style: italic; }
+
+/* FULL STANDINGS SECTION ON HOST CELEBRATION */
+.full-standings-section { width: 100%; max-width: 850px; margin: 2rem 0; text-align: center; }
+.full-standings-section h3 { font-family: var(--font-heading); font-size: 1.3rem; color: var(--saffron); margin-bottom: 1rem; letter-spacing: 1px; }
+
 /* MODALS & SOUNDBOARD */
 .modal-overlay {
     position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;

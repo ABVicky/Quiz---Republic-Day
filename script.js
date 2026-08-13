@@ -190,7 +190,7 @@ function spawnFloatingEmoji(emojiSymbol) {
     const el = document.createElement('div');
     el.className = 'floating-emoji';
     el.textContent = emojiSymbol;
-    el.style.left = `${Math.random() * 180}px`;
+    el.style.left = `${Math.random() * 160}px`;
     container.appendChild(el);
     setTimeout(() => el.remove(), 3000);
 }
@@ -536,10 +536,24 @@ function showFinalVictoryScreen() {
     audio.playVictory();
     triggerConfettiBurst();
 
+    const sorted = Array.from(connectedPlayers.values()).sort((a, b) => b.score - a.score);
+
+    // 1. Broadcast Personal Final Certificates to Mobile Phones
+    sorted.forEach((player, index) => {
+        const rank = index + 1;
+        if (player.conn && player.conn.open) {
+            player.conn.send({
+                type: 'FINAL_RESULTS',
+                rank: rank,
+                totalScore: player.score,
+                isTop3: rank <= 3
+            });
+        }
+    });
+
+    // 2. Render Top 3 Victory Podium
     const container = document.getElementById('podium-container');
     container.innerHTML = '';
-
-    const sorted = Array.from(connectedPlayers.values()).sort((a, b) => b.score - a.score);
     const top3 = [sorted[1], sorted[0], sorted[2]].filter(Boolean);
 
     top3.forEach((player) => {
@@ -549,11 +563,25 @@ function showFinalVictoryScreen() {
         step.innerHTML = `
             <div class="podium-team-name">${escapeHtml(player.name)}</div>
             <div class="podium-block podium-${rank}">
-                <div class="podium-rank">${rank === 1 ? '👑 1ST' : rank === 2 ? '🥈 2ND' : '🥉 3RD'}</div>
+                <div class="podium-rank">${rank === 1 ? '👑 1ST CHAMPION' : rank === 2 ? '🥈 2ND RUNNER-UP' : '🥉 3RD RUNNER-UP'}</div>
                 <div class="podium-score">${player.score} PTS</div>
             </div>
         `;
         container.appendChild(step);
+    });
+
+    // 3. Render Full Ranked Leaderboard Table
+    const fullList = document.getElementById('full-rankings-list');
+    fullList.innerHTML = '';
+    sorted.forEach((player, rankIdx) => {
+        const row = document.createElement('div');
+        row.className = `leaderboard-row rank-${rankIdx + 1}`;
+        row.innerHTML = `
+            <div class="rank-badge">${rankIdx === 0 ? '👑 1' : rankIdx === 1 ? '🥈 2' : rankIdx === 2 ? '🥉 3' : `#${rankIdx + 1}`}</div>
+            <div class="rank-team-name">${escapeHtml(player.name)}</div>
+            <div class="rank-score">${player.score} PTS</div>
+        `;
+        fullList.appendChild(row);
     });
 }
 
@@ -662,6 +690,15 @@ function handleHostMessage(data) {
         rank.textContent = `Current Rank: #${data.rank}`;
         document.getElementById('student-pad-score').textContent = `Score: ${data.totalScore}`;
         showStudentScreen('student-result-screen');
+    }
+    else if (data.type === 'FINAL_RESULTS') {
+        document.getElementById('student-final-badge').textContent = data.rank === 1 ? '👑' : data.rank === 2 ? '🥈' : data.rank === 3 ? '🥉' : '🎖️';
+        document.getElementById('student-final-title').textContent = data.rank === 1 ? '1ST PLACE CHAMPION!' : data.rank === 2 ? '2ND RUNNER-UP!' : data.rank === 3 ? '3RD RUNNER-UP!' : 'ARENA FINISHER!';
+        document.getElementById('student-final-rank').textContent = `FINAL RANK: #${data.rank}`;
+        document.getElementById('student-final-score').textContent = `Total Score: ${data.totalScore} PTS`;
+        showStudentScreen('student-final-screen');
+
+        if (navigator.vibrate) navigator.vibrate([100, 50, 100, 50, 150]);
     }
 }
 
