@@ -1,6 +1,6 @@
 /* ==========================================================================
    🇮🇳 DIGITAL MARKETING FREEDOM QUIZ - ULTIMATE EDITION
-   Designed, Developed & Ideated by Vicky Prasad Mahato
+   Designed, Developed & Ideated by Vicky Prasad Mahato (https://abvicky.in)
    ========================================================================== */
 
 :root {
@@ -55,10 +55,18 @@ html, body {
     z-index: 10;
 }
 
-.app-watermark span {
+.app-watermark a {
     color: var(--saffron);
     font-weight: 800;
+    text-decoration: none;
     text-shadow: 0 0 10px rgba(255, 153, 51, 0.5);
+    transition: all 0.2s ease;
+}
+
+.app-watermark a:hover {
+    color: #FFFFFF;
+    text-shadow: 0 0 15px var(--saffron-glow);
+    text-decoration: underline;
 }
 
 /* FLOATING EMOJI STREAM OVERLAY */
