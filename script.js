@@ -459,13 +459,24 @@ function showRoundIntroOverlay(q, onContinue) {
     overlay.classList.remove('hidden');
     audio.playRoundSwoosh();
 
-    const btn = document.getElementById('btn-start-round-now');
-    const handler = () => {
+    let autoTimer = null;
+    let completed = false;
+
+    const proceed = () => {
+        if (completed) return;
+        completed = true;
+        if (autoTimer) clearTimeout(autoTimer);
         overlay.classList.add('hidden');
-        btn.removeEventListener('click', handler);
+        btn.removeEventListener('click', proceed);
         onContinue();
     };
-    btn.addEventListener('click', handler);
+
+    const btn = document.getElementById('btn-start-round-now');
+    btn.addEventListener('click', proceed);
+
+    autoTimer = setTimeout(() => {
+        proceed();
+    }, 2500);
 }
 
 function renderHostQuestionStage(qIndex) {

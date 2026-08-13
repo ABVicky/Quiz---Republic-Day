@@ -14,7 +14,7 @@
     --green-glow: rgba(16, 185, 129, 0.45);
     
     --navy: #0A0F1D;
-    --navy-card: rgba(13, 20, 36, 0.85);
+    --navy-card: rgba(13, 20, 36, 0.92);
     --gold: #FFD700;
     --gold-glow: rgba(255, 215, 0, 0.5);
     --cyan: #00F0FF;
@@ -51,6 +51,80 @@ html, body {
     font-family: var(--font-main);
     -webkit-font-smoothing: antialiased;
 }
+
+/* SCREEN OVERLAYS & ROUND INTRO MODAL */
+.screen-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    background: rgba(4, 7, 15, 0.94);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    z-index: 999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.round-intro-card {
+    background: var(--navy-card);
+    border: 2px solid var(--saffron);
+    border-radius: 28px;
+    padding: 3rem 2.5rem;
+    max-width: 650px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 1.2rem;
+    box-shadow: 0 0 50px rgba(255, 153, 51, 0.35), 0 25px 60px rgba(0, 0, 0, 0.8);
+    animation: zoomIn 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.round-number-badge {
+    font-family: var(--font-heading);
+    font-size: clamp(0.9rem, 3vw, 1.1rem);
+    font-weight: 900;
+    color: var(--saffron);
+    padding: 0.5rem 1.6rem;
+    background: rgba(255, 153, 51, 0.15);
+    border: 1px solid var(--saffron);
+    border-radius: 30px;
+    letter-spacing: 3px;
+}
+
+.round-intro-title {
+    font-family: var(--font-heading);
+    font-size: clamp(2rem, 6vw, 3.2rem);
+    font-weight: 900;
+    line-height: 1.15;
+    letter-spacing: -1px;
+}
+
+.round-intro-tagline {
+    font-size: clamp(1.1rem, 3.5vw, 1.4rem);
+    color: #94A3B8;
+    font-style: italic;
+}
+
+.round-intro-divider {
+    width: 100px;
+    height: 3px;
+    background: linear-gradient(90deg, var(--saffron), var(--green-light));
+    border-radius: 3px;
+    margin: 0.5rem 0;
+}
+
+.round-intro-qrange {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: white;
+}
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes zoomIn { from { opacity: 0; transform: scale(0.85); } to { opacity: 1; transform: scale(1); } }
 
 /* SLEEK WATERMARK FOOTER */
 .app-watermark {
