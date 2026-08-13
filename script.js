@@ -417,8 +417,8 @@ function broadcastToStudents(message) {
 
 function startHostGame() {
     if (connectedPlayers.size === 0) {
-        alert("Please wait for at least 1 student to join from their phone!");
-        return;
+        const proceedAnyway = confirm("No students are currently in the lobby. Start in Solo Host Demo Mode?");
+        if (!proceedAnyway) return;
     }
     loadHostQuestion(0);
 }
@@ -431,52 +431,10 @@ function loadHostQuestion(qIndex) {
     }
 
     gameState.currentQIndex = qIndex;
-    const q = gameState.questions[qIndex];
-
     connectedPlayers.forEach(p => { p.currentAnswer = null; p.answerTime = 0; });
 
-    const prevQ = qIndex > 0 ? gameState.questions[qIndex - 1] : null;
-    if (!prevQ || prevQ.round !== q.round) {
-        showRoundIntroOverlay(q, () => renderHostQuestionStage(qIndex));
-    } else {
-        renderHostQuestionStage(qIndex);
-    }
-}
-
-function showRoundIntroOverlay(q, onContinue) {
-    document.getElementById('round-intro-badge').textContent = `ROUND ${q.round}`;
-    document.getElementById('round-intro-title').textContent = q.roundName;
-    document.getElementById('round-intro-tagline').textContent = q.tagline;
-
-    const roundQuestions = gameState.questions.filter(item => item.round === q.round);
-    const startNum = gameState.questions.findIndex(item => item.round === q.round) + 1;
-    const endNum = startNum + roundQuestions.length - 1;
-
-    document.getElementById('round-q-start').textContent = startNum;
-    document.getElementById('round-q-end').textContent = endNum;
-
-    const overlay = document.getElementById('round-intro-overlay');
-    overlay.classList.remove('hidden');
-    audio.playRoundSwoosh();
-
-    let autoTimer = null;
-    let completed = false;
-
-    const proceed = () => {
-        if (completed) return;
-        completed = true;
-        if (autoTimer) clearTimeout(autoTimer);
-        overlay.classList.add('hidden');
-        btn.removeEventListener('click', proceed);
-        onContinue();
-    };
-
-    const btn = document.getElementById('btn-start-round-now');
-    btn.addEventListener('click', proceed);
-
-    autoTimer = setTimeout(() => {
-        proceed();
-    }, 2500);
+    // Direct Instant Transition to Question Stage
+    renderHostQuestionStage(qIndex);
 }
 
 function renderHostQuestionStage(qIndex) {
@@ -854,7 +812,6 @@ function initApp() {
 
     // Host Keyboard Control Shortcuts
     window.addEventListener('keydown', (e) => {
-        // Prevent key triggers if user is typing inside text input fields
         if (document.activeElement && (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA')) {
             return;
         }
