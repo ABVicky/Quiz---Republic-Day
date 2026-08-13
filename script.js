@@ -1,6 +1,7 @@
 /**
  * 🇮🇳 DIGITAL MARKETING FREEDOM QUIZ - ULTIMATE MULTIPLAYER GAME SHOW ENGINE
  * Independence Day Special • GitHub Pages + WebRTC + Soundboard & CSV Export
+ * Designed, Developed & Ideated by Vicky Prasad Mahato (https://abvicky.in)
  */
 
 // ==========================================================================
@@ -91,6 +92,33 @@ class QuizSoundEngine {
     }
     playVictory() { [523, 659, 784, 1046, 784, 1046].forEach((freq, idx) => setTimeout(() => this.playTone(freq, 'triangle', 0.3, 0.15), idx * 120)); }
     
+    // 🇮🇳 PATRIOTIC MELODY SYNTHESIZER: "SARE JAHAN SE ACHHA, HINDUSTAN HAMARA"
+    playSareJahanSeAchha() {
+        if (this.muted) return;
+        const notes = [
+            // Sa-re Ja-han Se Ach-ha (C4 D4 E4 F4 G4 G4 A4 G4)
+            { f: 261.63, d: 0.35 }, { f: 293.66, d: 0.35 }, { f: 329.63, d: 0.35 }, { f: 349.23, d: 0.35 },
+            { f: 392.00, d: 0.50 }, { f: 392.00, d: 0.35 }, { f: 440.00, d: 0.35 }, { f: 392.00, d: 0.50 },
+            // Hin-dus-tan Ha-ma-ra (F4 E4 D4 E4 F4 E4 D4 C4)
+            { f: 349.23, d: 0.35 }, { f: 329.63, d: 0.35 }, { f: 293.66, d: 0.35 }, { f: 329.63, d: 0.35 },
+            { f: 349.23, d: 0.40 }, { f: 329.63, d: 0.40 }, { f: 293.66, d: 0.40 }, { f: 261.63, d: 0.75 },
+            // Hum Bul-bu-le Hain Is-ki (G4 C5 B4 A4 G4 F4 E4 F4 G4)
+            { f: 392.00, d: 0.35 }, { f: 523.25, d: 0.42 }, { f: 493.88, d: 0.35 }, { f: 440.00, d: 0.35 },
+            { f: 392.00, d: 0.50 }, { f: 349.23, d: 0.35 }, { f: 329.63, d: 0.35 }, { f: 349.23, d: 0.35 }, { f: 392.00, d: 0.50 },
+            // Ye Gul-si-tan Ha-ma-ra (F4 E4 D4 E4 F4 E4 D4 C4)
+            { f: 349.23, d: 0.35 }, { f: 329.63, d: 0.35 }, { f: 293.66, d: 0.35 }, { f: 329.63, d: 0.35 },
+            { f: 349.23, d: 0.45 }, { f: 329.63, d: 0.45 }, { f: 293.66, d: 0.45 }, { f: 261.63, d: 0.95 }
+        ];
+
+        let accumTime = 0;
+        notes.forEach((note) => {
+            setTimeout(() => {
+                this.playTone(note.f, 'triangle', note.d, 0.16);
+            }, accumTime * 1000);
+            accumTime += note.d + 0.05;
+        });
+    }
+
     // FX SOUNDBOARD
     playDrumroll() {
         for (let i = 0; i < 20; i++) {
@@ -533,7 +561,8 @@ function showFinalVictoryScreen() {
     document.getElementById('final-screen').classList.remove('hidden');
     document.getElementById('final-screen').classList.add('active');
 
-    audio.playVictory();
+    // 🇮🇳 PLAY PATRIOTIC TUNE: "SARE JAHAN SE ACHHA, HINDUSTAN HAMARA"
+    audio.playSareJahanSeAchha();
     triggerConfettiBurst();
 
     const sorted = Array.from(connectedPlayers.values()).sort((a, b) => b.score - a.score);
@@ -759,7 +788,7 @@ function initApp() {
             const fx = btn.dataset.fx;
             if (fx === 'drumroll') audio.playDrumroll();
             else if (fx === 'applause') audio.playApplause();
-            else if (fx === 'fanfare') audio.playVictory();
+            else if (fx === 'fanfare') audio.playSareJahanSeAchha();
             else if (fx === 'alarm') audio.playAlarm();
             else if (fx === 'bell') audio.playBell();
             else if (fx === 'confetti') triggerConfettiBurst();
